@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterView : MonoBehaviour {
+namespace GameView
+{
+    public class CharacterView
+    {
+        void Start()
+        {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        }
+
+        void Update()
+        {
+
+        }
+    }
 }
