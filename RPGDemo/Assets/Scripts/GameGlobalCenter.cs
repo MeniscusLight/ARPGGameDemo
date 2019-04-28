@@ -19,6 +19,12 @@ public class GameGlobalCenter : MonoBehaviour
 	
 	void Update ()
     {
-		
+        long thisTime = m_stopWatch.ElapsedMilliseconds;
+        this.GameLogicUpdate(thisTime);
 	}
+
+    void GameLogicUpdate(long currentTime)
+    {
+
+    }
 }
