@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace GameLogic
 {
@@ -13,19 +10,19 @@ namespace GameLogic
         private uint m_tickerID = 0;
         private uint m_startTick = 0;
 
-
-        protected void initTask()
+        internal void Init()
         {
             m_valid = true;
-            m_tickerID = ++s_globalTickerID;
+            ++s_globalTickerID;
+            m_tickerID = s_globalTickerID;
         }
 
-        public void SetStartTick(uint startTick)
+        internal void WaitForRelease()
         {
-            m_startTick = startTick;
+            m_valid = false;
         }
 
-        public void OnRelease()
+        internal virtual void OnRelease()
         {
             m_valid = false;
             m_tickerID = 0;
@@ -42,6 +39,16 @@ namespace GameLogic
         {
             get { return m_tickerID; }
         }
+
+        public uint StartTick
+        {
+            set { m_startTick = value; }
+            get { return m_startTick; }
+        }
+
+        abstract public void Start();
+        abstract public void Stop();
+        abstract internal void Update();
 
     }
 }

@@ -74,10 +74,7 @@ public class GameGlobalCenter : MonoBehaviour
             //
         }
     }
-
-
-
-
+    
 
     void Destroy()
     {
