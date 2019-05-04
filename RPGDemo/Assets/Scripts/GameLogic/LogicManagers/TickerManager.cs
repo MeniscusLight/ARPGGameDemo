@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace GameLogic
 {
-    public class TickerManager
+    public class TickerManager : ITickerCtrl
     {
         public static ulong s_globalTick = 0;
 
@@ -22,6 +22,9 @@ namespace GameLogic
 
         private long m_logicTickFrameTime = 0;
 
+        private long m_logicTickerTimeRemain = 0;
+        private long m_prevUpdateLogicTickerTime = 0;
+
         private uint m_logicTickFrameRate = 0;
         private uint m_viewTickFrameRate = 0;
 
@@ -34,8 +37,8 @@ namespace GameLogic
         public void Init()
         {
             m_updateTick = 0;
-
             m_stopWatch.Start();
+            m_rootTickerGroup.Init(this);
         }
 
         public long GetRunningTime()
@@ -126,12 +129,27 @@ namespace GameLogic
 
         private void UpdateNativeLogicTick()
         {
+            long currentTime = this.GetRunningTime();
+            long timeDistance = currentTime - m_prevUpdateLogicTickerTime + m_logicTickerTimeRemain;
+            uint nativeUpdateCount =(uint)(timeDistance / m_logicTickFrameTime);
+            m_prevUpdateLogicTickerTime = currentTime;
+            m_logicTickerTimeRemain = timeDistance % m_logicTickFrameTime;
 
+            uint nativeUpdateMaxCount = Math.Max(nativeUpdateCount, GameLogicDefs.TICKER_GROUP_UPDATE_MAX_COUNT);
+            if (nativeUpdateCount > 0)
+            {
+                for (int index = 0; index < nativeUpdateCount; ++index)
+                {
+                    // update ticker tree
+                    m_rootTickerGroup.UpdateGroup();
+                }
+            }
         }
 
         private void UpdateLogicTick()
         {
-
+            ++m_serverLogicTick;
+            // waiting for complete code...
         }
 
         private void UpdateOnlineTick()
@@ -308,8 +326,24 @@ namespace GameLogic
                 m_rootTickerGroup.OnRelease();
             }
             m_stopWatch.Stop();
-            //
-        }
+
+            m_rootTickerGroup = null;
+            m_stopWatch = null;
+
+            m_isNativeLogic = false;
+            m_isSystem = false;
+            m_isOnline = false;
+            m_isServer = false;
+            m_isLogic = false;
+
+            m_updateTick = 0;
+            m_serverLogicTick = 0;
+
+            m_logicTickFrameTime = 0;
+
+            m_logicTickFrameRate = 0;
+            m_viewTickFrameRate = 0;
+    }
 
         public Func<Ticker> TickerCreater
         {
@@ -379,7 +413,7 @@ namespace GameLogic
         {
             set
             {
-                
+                // debuger.log("setting pause state is : {0}", value);
             }
             get
             {
@@ -390,6 +424,11 @@ namespace GameLogic
                 }
                 return isPause;
             }
+        }
+
+        public bool IsNativeLogic
+        {
+            set { m_isNativeLogic = value; }
         }
 
         public bool IsSystem

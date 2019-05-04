@@ -28,7 +28,6 @@ namespace GameLogic
 
         public TickerGroup()
         {
-            // prepare to set capcity...
             m_tickerTaskList = new List<TickerTask>();
             m_tickerTaskAssistList = new List<TickerTask>();
         }

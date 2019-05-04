@@ -11,24 +11,27 @@ public class GameGlobalCenter : MonoBehaviour
 {
     private uint m_globalUpdateFrame = 0;
     private long m_prevGlobalUpdateTime = 0;
-    private uint m_gameUpdateFrame = 0;
-
-    private float m_frameTime = 0;
-    private uint m_logicTickerTimeRemain = 0;
-    private long m_prevUpdateLogicTickerTime = 0;
-    
-
+    private uint m_gameGlobalUpdateFrame = 0;
+        
     private Stopwatch m_stopWatch = null;
+
+    private TickerManager m_logicTickerMgrTest = null;
 
 	void Start ()
     {
         m_stopWatch = new Stopwatch();
         m_stopWatch.Start();
 
-        m_frameTime = 1000.0f / GameLogicDefs.GAME_VIEW_FRAME_RATE;
-
         // set game frameRate is 60
         Application.targetFrameRate = 60;
+
+        m_logicTickerMgrTest = new TickerManager();
+        m_logicTickerMgrTest.IsLogic = true;
+        m_logicTickerMgrTest.IsNativeLogic = true;
+        m_logicTickerMgrTest.IsServer = true;
+        m_logicTickerMgrTest.SetLogicFrameRate(GameLogicDefs.GAME_LOGIC_FRAME_RATE);
+        m_logicTickerMgrTest.Init();
+        m_logicTickerMgrTest.Start();
     }
 	
 	void Update ()
@@ -36,42 +39,44 @@ public class GameGlobalCenter : MonoBehaviour
         ++m_globalUpdateFrame;
 
         long thisTime = m_stopWatch.ElapsedMilliseconds;
-        this.GameUpdateFrame(thisTime);
+        this.GameGlobalUpdateFrame(thisTime);
         this.GameLogicUpdate(thisTime);
 	}
 
-    void GameUpdateFrame(long currentTime)
+    void GameGlobalUpdateFrame(long currentTime)
     {
         if (m_prevGlobalUpdateTime == 0)
         {
             m_prevGlobalUpdateTime = currentTime;
         }
-        ++m_gameUpdateFrame;
+        ++m_gameGlobalUpdateFrame;
         if (currentTime - m_prevGlobalUpdateTime >= 1000)
         {
             m_prevGlobalUpdateTime = currentTime;
-            GameGlobalData.GameFrameRate = m_gameUpdateFrame;
-            m_gameUpdateFrame = 0;
+            GameGlobalData.GameFrameRate = m_gameGlobalUpdateFrame;
+            m_gameGlobalUpdateFrame = 0;
         }
 
     }
 
     void GameLogicUpdate(long currentTime)
     {
-        bool isOnline = false;
+        bool isOnline = GameGlobalData.GameTestOnline;
         if (!isOnline)
         {
-            long timeDistance = currentTime - m_prevUpdateLogicTickerTime + m_logicTickerTimeRemain;
-            if (timeDistance >= m_frameTime)
+            if (m_logicTickerMgrTest != null)
             {
-                m_logicTickerTimeRemain = (uint)(timeDistance - m_frameTime);
-                m_prevUpdateLogicTickerTime = currentTime;
-                // update logic tickerMgr
+                //TickerManager.UpdateGlobalTick();
+                m_logicTickerMgrTest.UpdateTicker();
             }
         }
         else
         {
-            //
+            if (m_logicTickerMgrTest != null)
+            {
+                //TickerManager.UpdateGlobalTick();
+                m_logicTickerMgrTest.UpdateTicker();
+            }
         }
     }
     
@@ -79,6 +84,9 @@ public class GameGlobalCenter : MonoBehaviour
     void Destroy()
     {
         m_stopWatch.Stop();
+        m_logicTickerMgrTest.Stop();
+        m_logicTickerMgrTest.Release();
         m_stopWatch = null;
+        m_logicTickerMgrTest = null;
     }
 }

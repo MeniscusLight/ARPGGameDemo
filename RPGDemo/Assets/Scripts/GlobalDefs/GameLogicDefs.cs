@@ -6,4 +6,5 @@ public class GameLogicDefs
 
     public const uint GAME_TICKER_FULL_SCALE = 100;
     public const uint TICKER_GROUP_UPDATE_MAX_COUNT = 5;
+
 }
