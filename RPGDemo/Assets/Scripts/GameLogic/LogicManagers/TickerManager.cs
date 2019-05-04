@@ -111,6 +111,7 @@ namespace GameLogic
             }
             else
             {
+                ++m_serverLogicTick;
                 UpdateLogicTick();
             }
         }
@@ -148,7 +149,7 @@ namespace GameLogic
 
         private void UpdateLogicTick()
         {
-            ++m_serverLogicTick;
+            m_updateTick = m_serverLogicTick;
             // waiting for complete code...
         }
 
