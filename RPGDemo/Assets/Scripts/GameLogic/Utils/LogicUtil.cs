@@ -25,7 +25,25 @@ namespace GameLogic
 
         public static void CopyListContent<T>(IList<T> srcList, IList<T> dstList)
         {
-
+            if (srcList == null || dstList == null)
+            {
+                return;
+            }
+            if (srcList.Count != dstList.Count)
+            {
+                return;
+            }
+            dstList.Clear();
+            T srcObj = default(T);
+            for (int index = 0; index < srcList.Count; ++index)
+            {
+                srcObj = srcList[index];
+                if (srcObj == null)
+                {
+                    continue;
+                }
+                dstList.Add(srcObj);
+            }
         }
 
         public static void Rotate2DVector(ref Vector2 direction, float angle)
