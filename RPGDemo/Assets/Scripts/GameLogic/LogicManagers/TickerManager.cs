@@ -23,7 +23,7 @@ namespace GameLogic
         private long m_logicTickFrameTime = 0;
 
         private long m_logicTickerTimeRemain = 0;
-        private long m_prevUpdateLogicTickerTime = 0;
+        private long m_logicUpdatePrevTime = 0;
 
         private uint m_logicTickFrameRate = 0;
         private uint m_viewTickFrameRate = 0;
@@ -37,8 +37,16 @@ namespace GameLogic
         public void Init()
         {
             m_updateTick = 0;
-            m_stopWatch.Start();
+            m_serverLogicTick = 0;
+            m_logicTickerTimeRemain = 0;
+            m_logicUpdatePrevTime = 0;
+
             m_rootTickerGroup.Init(this);
+            m_stopWatch.Start();
+
+            m_logicTickFrameRate = GameLogicDefs.GAME_LOGIC_FRAME_RATE;
+            m_viewTickFrameRate = GameLogicDefs.GAME_VIEW_FRAME_RATE;
+            m_logicTickFrameTime = 1000000 / m_logicTickFrameRate;
         }
 
         public long GetRunningTime()
@@ -111,7 +119,6 @@ namespace GameLogic
             }
             else
             {
-                ++m_serverLogicTick;
                 UpdateLogicTick();
             }
         }
@@ -131,26 +138,64 @@ namespace GameLogic
         private void UpdateNativeLogicTick()
         {
             long currentTime = this.GetRunningTime();
-            long timeDistance = currentTime - m_prevUpdateLogicTickerTime + m_logicTickerTimeRemain;
-            uint nativeUpdateCount =(uint)(timeDistance / m_logicTickFrameTime);
-            m_prevUpdateLogicTickerTime = currentTime;
-            m_logicTickerTimeRemain = timeDistance % m_logicTickFrameTime;
-
-            uint nativeUpdateMaxCount = Math.Max(nativeUpdateCount, GameLogicDefs.TICKER_GROUP_UPDATE_MAX_COUNT);
-            if (nativeUpdateCount > 0)
+            if (m_logicUpdatePrevTime == 0)
             {
-                for (int index = 0; index < nativeUpdateCount; ++index)
+                m_logicUpdatePrevTime = currentTime;
+            }
+            long timeDistance = currentTime - m_logicUpdatePrevTime + m_logicTickerTimeRemain;
+            if (timeDistance >= m_logicTickFrameTime)
+            {
+                uint nativeUpdateCount = (uint)(timeDistance / m_logicTickFrameTime);
+                m_logicTickerTimeRemain = timeDistance % m_logicTickFrameTime;
+                m_logicUpdatePrevTime = currentTime;
+
+                uint nativeUpdateMaxCount = Math.Max(nativeUpdateCount, GameLogicDefs.TICKER_GROUP_UPDATE_MAX_COUNT);
+                if (nativeUpdateCount > 0)
                 {
-                    // update ticker tree
-                    m_rootTickerGroup.UpdateGroup();
+                    for (int index = 0; index < nativeUpdateCount; ++index)
+                    {
+                        UpdateTickerCtrl();
+                    }
                 }
             }
         }
 
         private void UpdateLogicTick()
         {
-            m_updateTick = m_serverLogicTick;
-            // waiting for complete code...
+            if (m_updateTick != m_serverLogicTick)
+            {
+                if (m_isServer)
+                {
+                    m_updateTick = m_serverLogicTick;
+                    UpdateTickerCtrl();
+                }
+                else
+                {
+                    // Client,Logic
+                    if (m_updateTick < m_serverLogicTick)
+                    {
+                        uint tickDistance = m_serverLogicTick - m_updateTick;
+                        if (tickDistance < GameLogicDefs.LOGIC_TICK_MAX_DISTANCE)
+                        {
+                            for (int index = 0; index < tickDistance; ++index)
+                            {
+                                ++m_updateTick;
+                                UpdateTickerCtrl();
+                            }
+                        }
+                        else // out of maxDistance, discard
+                        {
+                            m_updateTick = m_serverLogicTick;
+                            UpdateTickerCtrl();
+                        }
+                    }
+                    else
+                    {
+                        m_updateTick = m_serverLogicTick;
+                        UpdateTickerCtrl();
+                    }
+                }
+            }
         }
 
         private void UpdateOnlineTick()
@@ -341,6 +386,8 @@ namespace GameLogic
             m_serverLogicTick = 0;
 
             m_logicTickFrameTime = 0;
+            m_logicUpdatePrevTime = 0;
+            m_logicTickerTimeRemain = 0;
 
             m_logicTickFrameRate = 0;
             m_viewTickFrameRate = 0;

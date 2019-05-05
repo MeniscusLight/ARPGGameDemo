@@ -37,6 +37,7 @@ namespace GameLogic
             this.Init();
             m_rootTickerCtrl = tickerCtrl;
             m_tickerScale = GameLogicDefs.GAME_TICKER_FULL_SCALE;
+            m_tickerProgress = 0;
         }
 
         private TickerTask FindTickerTaskWithID(uint tickerTaskID)
