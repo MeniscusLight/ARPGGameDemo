@@ -9,14 +9,21 @@ namespace GameLogic
     {
         private TickerManager m_testTickerMgr = null;
 
-        public LogicManagerCenter()
+        public LogicManagerCenter(LogicScene logicScene)
         {
-
+            
         }
 
         public void Init()
         {
 
         }
+
+        public void Release()
+        {
+
+        }
+
+        // get all of logicManager...
     }
 }
