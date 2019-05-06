@@ -21,8 +21,7 @@ public class GameGlobalCenter : MonoBehaviour
     {
         m_stopWatch = new Stopwatch();
         m_stopWatch.Start();
-
-        // set game frameRate is 60
+                
         Application.targetFrameRate = 60;
 
         m_logicTickerMgrTest = new TickerManager();
