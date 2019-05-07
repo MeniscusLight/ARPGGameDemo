@@ -21,7 +21,7 @@ namespace GameLogic
 
         public void Release()
         {
-
+            m_testTickerMgr = null;
         }
 
         // get all of logicManager...
