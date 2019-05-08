@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GameLogic
 {
-    class LogicBasicManager
+    public abstract class LogicBasicManager
     {
         private bool m_isValid = false;
         private LogicScene m_logicScene = null;
@@ -15,12 +15,12 @@ namespace GameLogic
             this.m_logicScene = logicScene;
         }
 
-        public void Init()
+        internal void BaseInit()
         {
             m_isValid = true;
         }
 
-        public void Release()
+        public void OnRelease()
         {
             m_logicScene = null;
             m_isValid = false;
