@@ -19,6 +19,10 @@ namespace GameLogic
             m_logicMgrCenter.Init();
         }
 
+        public void Release()
+        {
+            m_logicMgrCenter.Release();
+        }
         
         public LogicManagerCenter LogicMgrCenter
         {
