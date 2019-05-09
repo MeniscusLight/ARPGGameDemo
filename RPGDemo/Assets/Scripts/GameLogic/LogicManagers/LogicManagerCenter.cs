@@ -31,6 +31,10 @@ namespace GameLogic
             m_logicTimerMgr.Init();
         }
 
+        public void Start()
+        {
+
+        }
 
 
         public void Release()

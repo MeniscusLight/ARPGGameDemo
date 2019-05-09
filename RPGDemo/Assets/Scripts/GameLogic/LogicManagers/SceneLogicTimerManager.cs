@@ -7,6 +7,7 @@ namespace GameLogic
 {
     public class SceneLogicTimerManager : LogicBasicManager
     {
+
         TickerManager m_logicTickerMgr = null;
         TickerManager m_viewTickerMgr = null;
         public SceneLogicTimerManager(LogicScene logicScene) : base(logicScene)
