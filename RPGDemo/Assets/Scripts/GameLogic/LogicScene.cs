@@ -21,7 +21,7 @@ namespace GameLogic
 
         public void Start()
         {
-
+            m_logicMgrCenter.SceneLogicCmdMgr.Start();
         }
 
         public void Release()
@@ -33,7 +33,6 @@ namespace GameLogic
         {
             get { return m_logicMgrCenter; }
         }
-
 
     }
 }

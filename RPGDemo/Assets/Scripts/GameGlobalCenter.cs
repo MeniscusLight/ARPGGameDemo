@@ -5,6 +5,7 @@ using UnityEngine;
 using GameLogic;
 using GameView;
 using GameUIContrl;
+using GameCtrls;
 
 
 public class GameGlobalCenter : MonoBehaviour
@@ -65,7 +66,6 @@ public class GameGlobalCenter : MonoBehaviour
         {
             if (m_logicTickerMgrTest != null)
             {
-                //TickerManager.UpdateGlobalTick();
                 m_logicTickerMgrTest.UpdateTicker();
             }
         }
@@ -73,10 +73,10 @@ public class GameGlobalCenter : MonoBehaviour
         {
             if (m_logicTickerMgrTest != null)
             {
-                //TickerManager.UpdateGlobalTick();
                 m_logicTickerMgrTest.UpdateTicker();
             }
         }
+        TickerManager.UpdateGlobalTick();
     }
     
 

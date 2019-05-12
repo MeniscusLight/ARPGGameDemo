@@ -22,8 +22,13 @@ namespace GameLogic
         {
             base.BaseInit();
             m_logicTickerMgr.Init();
+            m_logicCmdTickerMgr.Start();
+
             m_logicTickerMgr.Init();
+            m_logicTickerMgr.Start();
+
             m_viewTickerMgr.Init();
+            m_viewTickerMgr.Start();
         }
 
         public void UpdateTickMgr()
