@@ -30,12 +30,7 @@ namespace GameLogic
             m_logicCmdMgr.Init();
             m_logicTimerMgr.Init();
         }
-
-        public void Start()
-        {
-
-        }
-
+        
 
         public void Release()
         {
