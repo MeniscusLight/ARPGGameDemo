@@ -104,9 +104,12 @@ namespace GameLogic
                 uint updateCount = currentTickerProgress / GameLogicDefs.GAME_TICKER_FULL_SCALE;
                 m_tickerProgress = currentTickerProgress % GameLogicDefs.GAME_TICKER_FULL_SCALE;
                 updateCount = Math.Max(updateCount, GameLogicDefs.TICKER_GROUP_UPDATE_MAX_COUNT);
-                for (int index = 0; index < updateCount; ++index)
+                if (updateCount > 0)
                 {
-                    Update();
+                    for (int index = 0; index < updateCount; ++index)
+                    {
+                        Update();
+                    }
                 }
             }
         }
